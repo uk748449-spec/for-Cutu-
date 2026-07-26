@@ -65,9 +65,9 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     if (!canvas) return;
 
     function syncSize() {
-      if (!canvas) return;
       const w = canvas.clientWidth || 1280;
       const h = canvas.clientHeight || 720;
+
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -78,20 +78,33 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     resizeObserver.observe(canvas);
     syncSize();
 
-    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-    if (!gl || !(gl instanceof WebGLRenderingContext)) {
+    const gl = canvas.getContext("webgl") as WebGLRenderingContext | null;
+
+    if (!gl) {
       resizeObserver.disconnect();
       return;
     }
 
     function compileShader(type: number, src: string) {
-      const shader = gl!.createShader(type)!;
-      gl!.shaderSource(shader, src);
-      gl!.compileShader(shader);
+      const shader = gl.createShader(type);
+
+      if (!shader) {
+        throw new Error("Failed to create shader.");
+      }
+
+      gl.shaderSource(shader, src);
+      gl.compileShader(shader);
+
       return shader;
     }
 
-    const program = gl.createProgram()!;
+    const program = gl.createProgram();
+
+    if (!program) {
+      resizeObserver.disconnect();
+      return;
+    }
+
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, VERTEX_SHADER));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER));
     gl.linkProgram(program);
@@ -104,6 +117,7 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
       gl.STATIC_DRAW
     );
+
     const posLoc = gl.getAttribLocation(program, "a_position");
     gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
@@ -112,33 +126,45 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     const uRes = gl.getUniformLocation(program, "u_resolution");
     const uMouse = gl.getUniformLocation(program, "u_mouse");
 
-    const mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+    const mouse = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+    };
+
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
+
       if (rect.width && rect.height) {
         const nx = (event.clientX - rect.left) / rect.width;
-        const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+        const ny = 1 - (event.clientY - rect.top) / rect.height;
+
         mouse.x = nx * canvas.width;
         mouse.y = ny * canvas.height;
       }
     };
+
     window.addEventListener("mousemove", handleMouseMove);
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    let rafId: number;
+    let rafId = 0;
+
     function render(t: number) {
-      gl!.viewport(0, 0, canvas!.width, canvas!.height);
-      if (uTime) gl!.uniform1f(uTime, t * 0.001);
-      if (uRes) gl!.uniform2f(uRes, canvas!.width, canvas!.height);
-      if (uMouse) gl!.uniform2f(uMouse, mouse.x, mouse.y);
-      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+
+      if (uTime) gl.uniform1f(uTime, t * 0.001);
+      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
       if (!prefersReducedMotion) {
         rafId = requestAnimationFrame(render);
       }
     }
+
     rafId = requestAnimationFrame(render);
 
     return () => {
