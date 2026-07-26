@@ -3,13 +3,6 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-/**
- * Ported 1:1 from stitch_the_champa_experience/shader/code.html.
- * Vertex + fragment shader source, uniforms, and mouse-tracking logic
- * are unchanged from the export. Only the mounting mechanism (React
- * ref + effect instead of a raw <script>) is new.
- */
-
 const VERTEX_SHADER = `attribute vec2 a_position;
 varying vec2 v_texCoord;
 void main() {
@@ -32,17 +25,15 @@ void main() {
     vec2 uv = v_texCoord;
     vec2 mouse = u_mouse / u_resolution;
 
-    // Aurora effect
     float time = u_time * 0.2;
-    vec3 color1 = vec3(0.04, 0.07, 0.15); // Deep Navy
-    vec3 color2 = vec3(0.12, 0.14, 0.25); // Mid Navy
-    vec3 color3 = vec3(1.0, 0.7, 0.3) * 0.1; // Amber Glow
+    vec3 color1 = vec3(0.04, 0.07, 0.15);
+    vec3 color2 = vec3(0.12, 0.14, 0.25);
+    vec3 color3 = vec3(1.0, 0.7, 0.3) * 0.1;
 
     float n = noise(uv * 3.0 + time);
     float aurora = sin(uv.x * 2.0 + time + n) * 0.5 + 0.5;
     aurora *= cos(uv.y * 3.0 - time * 0.5 + n) * 0.5 + 0.5;
 
-    // Mouse interactivity
     float dist = distance(uv, mouse);
     float glow = smoothstep(0.4, 0.0, dist) * 0.15;
 
@@ -58,16 +49,14 @@ interface AuroraBackgroundProps {
 }
 
 export function AuroraBackground({ className }: AuroraBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+
     if (!canvas) return;
 
     function syncSize() {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
       const w = canvas.clientWidth || 1280;
       const h = canvas.clientHeight || 720;
 
@@ -81,14 +70,17 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     resizeObserver.observe(canvas);
     syncSize();
 
-    const gl = canvas.getContext("webgl") as WebGLRenderingContext | null;
+    const context = canvas.getContext("webgl");
 
-    if (!gl) {
+    if (!(context instanceof WebGLRenderingContext)) {
       resizeObserver.disconnect();
       return;
     }
 
-    function compileShader(type: number, src: string) {
+    // From here on, gl can NEVER be null.
+    const gl: WebGLRenderingContext = context;
+
+    function compileShader(type: number, src: string): WebGLShader {
       const shader = gl.createShader(type);
 
       if (!shader) {
@@ -97,6 +89,10 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
 
       gl.shaderSource(shader, src);
       gl.compileShader(shader);
+
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw new Error(gl.getShaderInfoLog(shader) || "Shader compile failed");
+      }
 
       return shader;
     }
@@ -111,18 +107,36 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     gl.attachShader(program, compileShader(gl.VERTEX_SHADER, VERTEX_SHADER));
     gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER));
     gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      throw new Error(gl.getProgramInfoLog(program) || "Program link failed");
+    }
+
     gl.useProgram(program);
 
     const buffer = gl.createBuffer();
+
+    if (!buffer) {
+      throw new Error("Failed to create buffer.");
+    }
+
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
     gl.bufferData(
       gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+      new Float32Array([
+        -1, -1,
+         1, -1,
+        -1,  1,
+         1,  1,
+      ]),
       gl.STATIC_DRAW
     );
 
     const posLoc = gl.getAttribLocation(program, "a_position");
+
     gl.enableVertexAttribArray(posLoc);
+
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
     const uTime = gl.getUniformLocation(program, "u_time");
@@ -137,13 +151,13 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
 
-      if (rect.width && rect.height) {
-        const nx = (event.clientX - rect.left) / rect.width;
-        const ny = 1 - (event.clientY - rect.top) / rect.height;
+      if (!rect.width || !rect.height) return;
 
-        mouse.x = nx * canvas.width;
-        mouse.y = ny * canvas.height;
-      }
+      mouse.x =
+        ((event.clientX - rect.left) / rect.width) * canvas.width;
+
+      mouse.y =
+        (1 - (event.clientY - rect.top) / rect.height) * canvas.height;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -154,10 +168,10 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
 
     let rafId = 0;
 
-    function render(t: number) {
+    const render = (time: number) => {
       gl.viewport(0, 0, canvas.width, canvas.height);
 
-      if (uTime) gl.uniform1f(uTime, t * 0.001);
+      if (uTime) gl.uniform1f(uTime, time * 0.001);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
       if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
 
@@ -166,7 +180,7 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
       if (!prefersReducedMotion) {
         rafId = requestAnimationFrame(render);
       }
-    }
+    };
 
     rafId = requestAnimationFrame(render);
 
