@@ -5,7 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { Icon } from "@/components/shared/Icon";
 
-const ICONS = ["favorite", "auto_awesome", "bolt", "local_fire_department", "emoji_objects", "psychology"];
+const ICONS = [
+  "favorite",
+  "auto_awesome",
+  "bolt",
+  "local_fire_department",
+  "emoji_objects",
+  "psychology",
+];
 
 interface Card {
   key: string;
@@ -13,11 +20,19 @@ interface Card {
 }
 
 function shuffled(): Card[] {
-  const pairs = [...ICONS, ...ICONS].map((icon, i) => ({ key: `${icon}-${i}`, icon }));
+  const pairs: Card[] = [...ICONS, ...ICONS].map((icon, i) => ({
+    key: `${icon}-${i}`,
+    icon,
+  }));
+
   for (let i = pairs.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+
+    const temp = pairs[i]!;
+    pairs[i] = pairs[j]!;
+    pairs[j] = temp;
   }
+
   return pairs;
 }
 
@@ -39,19 +54,41 @@ export function MemoryMatch() {
   }
 
   function handleFlip(index: number) {
-    if (busy || flipped.includes(index) || matched.has(cards[index].key)) return;
+    const clicked = cards[index];
+
+    if (!clicked) return;
+
+    if (busy || flipped.includes(index) || matched.has(clicked.key)) {
+      return;
+    }
+
     const next = [...flipped, index];
     setFlipped(next);
 
     if (next.length === 2) {
       setBusy(true);
       setMoves((m) => m + 1);
+
       const [a, b] = next;
+
       const aCard = cards[a];
       const bCard = cards[b];
+
+      if (!aCard || !bCard) {
+        setBusy(false);
+        setFlipped([]);
+        return;
+      }
+
       if (aCard.icon === bCard.icon) {
         setTimeout(() => {
-          setMatched((prev) => new Set(prev).add(aCard.key).add(bCard.key));
+          setMatched((prev) => {
+            const updated = new Set(prev);
+            updated.add(aCard.key);
+            updated.add(bCard.key);
+            return updated;
+          });
+
           setFlipped([]);
           setBusy(false);
         }, 500);
@@ -64,19 +101,27 @@ export function MemoryMatch() {
     }
   }
 
-  const memoText = useMemo(
-    () => (isWon ? `Solved in ${moves} moves. Certified sharp.` : "Find every pair."),
-    [isWon, moves]
-  );
+  const memoText = useMemo(() => {
+    return isWon
+      ? `Solved in ${moves} moves. Certified sharp.`
+      : "Find every pair.";
+  }, [isWon, moves]);
 
   return (
     <div className="rounded-xl glass-card p-gutter">
-      <h3 className="font-headline-md text-headline-md-mobile text-on-background">Memory Match</h3>
-      <p className="mt-2 font-body-md text-body-md text-on-surface-variant">{memoText}</p>
+      <h3 className="font-headline-md text-headline-md-mobile text-on-background">
+        Memory Match
+      </h3>
+
+      <p className="mt-2 font-body-md text-body-md text-on-surface-variant">
+        {memoText}
+      </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4">
         {cards.map((card, index) => {
-          const isFlipped = flipped.includes(index) || matched.has(card.key);
+          const isFlipped =
+            flipped.includes(index) || matched.has(card.key);
+
           return (
             <button
               key={card.key}
@@ -90,7 +135,12 @@ export function MemoryMatch() {
               }`}
             >
               {isFlipped ? (
-                <Icon name={card.icon} className="text-primary" size={22} aria-hidden="true" />
+                <Icon
+                  name={card.icon}
+                  className="text-primary"
+                  size={22}
+                  aria-hidden="true"
+                />
               ) : (
                 <span className="h-2 w-2 rounded-full bg-white/20" />
               )}
@@ -108,7 +158,13 @@ export function MemoryMatch() {
             transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
             className="mt-6 flex items-center justify-center gap-2 rounded-lg border border-primary/40 bg-primary-container/15 py-3"
           >
-            <Icon name="auto_awesome" className="text-primary" size={18} aria-hidden="true" />
+            <Icon
+              name="auto_awesome"
+              className="text-primary"
+              size={18}
+              aria-hidden="true"
+            />
+
             <p className="font-label-sm text-label-sm uppercase tracking-widest text-primary">
               Solved. Certified sharp.
             </p>
@@ -120,6 +176,7 @@ export function MemoryMatch() {
         <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant/60">
           Moves: {moves}
         </p>
+
         <MagneticButton
           onClick={reset}
           className="rounded-full bg-primary-container px-6 py-2 font-label-sm text-label-sm text-on-primary-container"
