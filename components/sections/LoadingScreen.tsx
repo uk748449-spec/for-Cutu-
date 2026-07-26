@@ -15,9 +15,9 @@ const AuroraBackground = dynamic(
  * hold / 500ms gap timing, same fade-in classnames and durations.
  */
 
-const MESSAGES = ["One small thing for Champa...", "Please don't bully the Me.."];
+const MESSAGES = ["One small thing for Champa...", "Please don't bully Me.."];
 
-const MONOGRAM_SRC = "/images/monogram.svg";
+const MONOGRAM_SRC = "/hero.jpg";
 
 interface LoadingScreenProps {
   onComplete: () => void;
