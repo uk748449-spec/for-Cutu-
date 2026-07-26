@@ -65,6 +65,9 @@ export function AuroraBackground({ className }: AuroraBackgroundProps) {
     if (!canvas) return;
 
     function syncSize() {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
       const w = canvas.clientWidth || 1280;
       const h = canvas.clientHeight || 720;
 
