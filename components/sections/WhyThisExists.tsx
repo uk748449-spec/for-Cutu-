@@ -21,6 +21,7 @@ export function WhyThisExists() {
           <span className="mb-4 block font-label-sm text-label-sm uppercase tracking-widest text-primary">
             Origin &amp; Intent
           </span>
+
           <h2 className="mb-unit font-display-lg text-display-lg text-on-background md:text-display-2xl">
             Why This Website Exists
           </h2>
@@ -38,6 +39,7 @@ export function WhyThisExists() {
                   src="/images/why-this-exists.jpg"
                 />
               </div>
+
               <p className="mt-4 px-2 font-note-text text-note-text italic text-on-surface-variant opacity-80">
                 &ldquo;A quiet space for the things left unsaid.&rdquo;
               </p>
@@ -49,14 +51,17 @@ export function WhyThisExists() {
               <p className="font-headline-md text-headline-md leading-tight text-primary">
                 Sometimes words become difficult.
               </p>
+
               <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant">
-               It's not like I didn't want to tell you but I didn't have courage to tell you about it just after saying so many times that I never had a relationship...
+                It&apos;s not like I didn&apos;t want to tell you, but I didn&apos;t have the courage to tell you about it after saying so many times that I had never been in a relationship...
               </p>
             </div>
+
             <div className="transform rounded-xl glass-card p-gutter transition-all duration-700 hover:translate-x-[-16px] md:translate-x-[-24px]">
               <p className="font-headline-md text-headline-md leading-tight text-tertiary-container">
                 Sometimes courage becomes late.
               </p>
+
               <p className="mt-4 font-body-lg text-body-lg text-on-surface-variant">
                 Perfectionism is often just fear in a suit. This sanctuary is the antidote, a
                 place where the work speaks before the doubt does.

@@ -28,15 +28,22 @@ export function EasterEgg() {
 
   useEffect(() => {
     let progress: string[] = [];
+
     function handleKey(e: KeyboardEvent) {
       progress.push(e.key);
       progress = progress.slice(-KONAMI.length);
+
       if (progress.join(",") === KONAMI.join(",")) {
         setOpen(true);
       }
-      if (e.key === "Escape") setOpen(false);
+
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
     }
+
     window.addEventListener("keydown", handleKey);
+
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
@@ -61,13 +68,21 @@ export function EasterEgg() {
             onClick={(e) => e.stopPropagation()}
             className="max-w-md rounded-xl glass-card p-gutter text-center"
           >
-            <Icon name="auto_awesome" className="mx-auto text-primary" size={40} aria-hidden="true" />
+            <Icon
+              name="auto_awesome"
+              className="mx-auto text-primary"
+              size={40}
+              aria-hidden="true"
+            />
+
             <h3 className="mt-4 font-headline-md text-headline-md-mobile text-on-background">
               You found the secret room.
             </h3>
+
             <p className="mt-3 font-note-text text-note-text italic text-on-surface-variant">
-              Of course you did. You find everything eventually — it's honestly a little annoying.
+              Of course you did. You find everything eventually — it&apos;s honestly a little annoying.
             </p>
+
             <button
               onClick={() => setOpen(false)}
               className="mt-6 font-label-sm text-label-sm uppercase tracking-widest text-primary"
