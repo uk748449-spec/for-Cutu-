@@ -1,0 +1,107 @@
+import type { Config } from "tailwindcss";
+
+// Every value in this file is copied verbatim from the Stitch export
+// (lumina_personal/DESIGN.md + the tailwind.config blocks embedded in
+// welcome_journey_entry/code.html and the_purpose_card/code.html).
+// Do not "improve" these values without a source screen to check against.
+
+const config: Config = {
+  darkMode: "class",
+  content: [
+    "./app/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "outline-variant": "#524535",
+        surface: "#0b1326",
+        "on-tertiary-fixed": "#21005e",
+        "primary-fixed": "#ffddb6",
+        "on-primary-container": "#704700",
+        primary: "#ffd7a9",
+        "inverse-primary": "#845400",
+        "surface-tint": "#ffb95a",
+        "on-secondary-container": "#e2a5af",
+        "tertiary-fixed": "#e8ddff",
+        tertiary: "#e4d8ff",
+        "primary-container": "#ffb347",
+        "on-primary": "#462a00",
+        "tertiary-container": "#cab8ff",
+        "surface-bright": "#31394d",
+        "surface-container-high": "#222a3d",
+        background: "#0b1326",
+        "on-error": "#690005",
+        "surface-container-highest": "#2d3449",
+        "secondary-container": "#673942",
+        "surface-container": "#171f33",
+        "on-background": "#dae2fd",
+        "secondary-fixed-dim": "#f5b6c0",
+        "on-tertiary": "#381385",
+        "on-error-container": "#ffdad6",
+        "on-tertiary-container": "#583ba5",
+        "inverse-surface": "#dae2fd",
+        error: "#ffb4ab",
+        "primary-fixed-dim": "#ffb95a",
+        "surface-container-lowest": "#060e20",
+        outline: "#9f8e7c",
+        "on-secondary-fixed-variant": "#673942",
+        "surface-variant": "#2d3449",
+        "error-container": "#93000a",
+        "on-surface-variant": "#d6c3b0",
+        "on-primary-fixed": "#2a1800",
+        "on-secondary-fixed": "#330f18",
+        "surface-container-low": "#131b2e",
+        secondary: "#f5b6c0",
+        "surface-dim": "#0b1326",
+        "on-primary-fixed-variant": "#643f00",
+        "on-surface": "#dae2fd",
+        "tertiary-fixed-dim": "#cebdff",
+        "secondary-fixed": "#ffd9de",
+        "on-secondary": "#4d242c",
+        "inverse-on-surface": "#283044",
+        "on-tertiary-fixed-variant": "#4f319c",
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        full: "9999px",
+      },
+      spacing: {
+        "container-max": "1200px",
+        "section-gap-desktop": "160px",
+        unit: "8px",
+        "section-gap-mobile": "80px",
+        "margin-safe": "24px",
+        gutter: "32px",
+      },
+      maxWidth: {
+        "container-max": "1200px",
+      },
+      fontFamily: {
+        "headline-md-mobile": ["Inter", "sans-serif"],
+        "display-lg": ["Inter", "sans-serif"],
+        "note-text": ["Literata", "serif"],
+        "display-2xl": ["Inter", "sans-serif"],
+        "body-md": ["Inter", "sans-serif"],
+        "headline-md": ["Inter", "sans-serif"],
+        "label-sm": ["Inter", "sans-serif"],
+        "body-lg": ["Inter", "sans-serif"],
+      },
+      fontSize: {
+        "headline-md-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "600" }],
+        "note-text": ["20px", { lineHeight: "32px", fontWeight: "400" }],
+        "display-2xl": ["72px", { lineHeight: "80px", letterSpacing: "-0.04em", fontWeight: "700" }],
+        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+        "headline-md": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

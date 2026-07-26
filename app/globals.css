@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Literata:ital,wght@0,400;1,400&display=swap");
+
+/* ---------------------------------------------------------------------
+   Everything below is ported directly from the <style> blocks in the
+   Stitch export (welcome_journey_entry/code.html + the_purpose_card/code.html).
+   Class names and values are unchanged from source.
+   --------------------------------------------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0b1326;
+  color: #dae2fd;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every section is a scroll target from the navbar/Connect button/hash
+   links. scroll-margin-top keeps the fixed h-20 (80px) navbar from ever
+   covering the top of the section it scrolled to — one offset, used
+   everywhere, instead of re-deriving it in JS per caller. */
+[id] {
+  scroll-margin-top: 96px;
+}
+
+/* from welcome_journey_entry */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* from the_purpose_card */
+.glass-card {
+  background: rgba(23, 31, 51, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.magnetic-button {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+}
+
+.magnetic-button:hover {
+  box-shadow: 0 0 30px rgba(255, 179, 71, 0.3);
+}
+
+.fade-in {
+  animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loading-text-anim {
+  animation: textFlow 3s ease-in-out forwards;
+}
+
+@keyframes textFlow {
+  0% { opacity: 0; filter: blur(10px); }
+  20% { opacity: 1; filter: blur(0px); }
+  80% { opacity: 1; filter: blur(0px); }
+  100% { opacity: 0; filter: blur(10px); }
+}
+
+.aurora-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 100%;
+  filter: blur(150px);
+  opacity: 0.15;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* from the_purpose_card (secondary aurora treatment used behind content sections) */
+.aurora-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.aurora-blob {
+  position: absolute;
+  filter: blur(120px);
+  opacity: 0.15;
+  border-radius: 50%;
+  transition: all 10s ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10%, 15%) scale(1.1); }
+  66% { transform: translate(-5%, 10%) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-aurora-1 { animation: float 20s infinite alternate; }
+.animate-aurora-2 { animation: float 25s infinite alternate-reverse; }
+
+/* ---------------------------------------------------------------------
+   Additive, not present in source: reduced-motion + focus visibility.
+   Kept minimal so it never overrides the design intent above.
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .fade-in,
+  .loading-text-anim,
+  .animate-aurora-1,
+  .animate-aurora-2 {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #ffb347;
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: #ffb347;
+  color: #462a00;
+}
+
